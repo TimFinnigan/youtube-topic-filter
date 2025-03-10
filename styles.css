@@ -1,0 +1,30 @@
+.custom-yt-btn {
+    background: #d93025;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    border: none;
+    margin: 2px 0;
+    transition: background-color 0.2s;
+}
+
+.custom-yt-btn:hover {
+    background: #b7271e;
+}
+
+#myQuotesButton {
+    background: #d93025;
+}
+
+#myQuotesButton:hover {
+    background: #b7271e;
+}
+
+#myCustomButtonContainer {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 8px;
+    border-radius: 8px;
+}

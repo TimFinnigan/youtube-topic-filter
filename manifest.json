@@ -1,0 +1,31 @@
+{
+    "manifest_version": 3,
+    "name": "YouTube Topic Filter",
+    "version": "1.0",
+    "description": "Extract summaries and quotes from YouTube videos based on specific topics or keywords.",
+    "permissions": [
+        "activeTab"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "*://www.youtube.com/*"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "css": [
+                "styles.css"
+            ]
+        }
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "images/icon16.png"
+        }
+    },
+    "icons": {
+        "16": "images/icon16.png"
+    }
+}
