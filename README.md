@@ -7,6 +7,8 @@ A browser extension that allows you to extract quotes from YouTube videos based 
 ### Quote Extraction
 Hover over any YouTube video thumbnail and click "Extract Quotes" to find all mentions of specific words or phrases in the video. Enter your search term when prompted, and the extension will:
 - Extract all segments of the video that mention your search term
+  - For single words: matches whole words only (e.g., "cat" won't match "category")
+  - For phrases: matches the exact phrase
 - Show the timestamp for each mention
 - Provide context around each mention
 - Allow you to click on timestamps to jump directly to that point in the video
@@ -53,7 +55,9 @@ python app.py
 1. Navigate to YouTube
 2. Hover over any video thumbnail
 3. Click "Extract Quotes"
-4. Enter the text you want to search for
+4. Enter the text you want to search for:
+   - For single words (e.g., "climate"): Will match only the exact word
+   - For phrases (e.g., "climate change"): Will match the exact phrase
 5. View the results in your browser
 6. Click on timestamps to jump to specific points in the video
 
