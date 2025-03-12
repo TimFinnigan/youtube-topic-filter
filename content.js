@@ -26,6 +26,26 @@ document.body.addEventListener('mouseover', function (e) {
             btnContainer.appendChild(quotesBtn);
         }
 
+        // Create full transcript button if it doesn't exist
+        let transcriptBtn = document.getElementById('myTranscriptButton');
+        if (!transcriptBtn) {
+            transcriptBtn = document.createElement('button');
+            transcriptBtn.id = 'myTranscriptButton';
+            transcriptBtn.innerText = 'View Full Transcript';
+            transcriptBtn.className = 'custom-yt-btn';
+            btnContainer.appendChild(transcriptBtn);
+        }
+
+        // Create text transcript button if it doesn't exist
+        let textTranscriptBtn = document.getElementById('myTextTranscriptButton');
+        if (!textTranscriptBtn) {
+            textTranscriptBtn = document.createElement('button');
+            textTranscriptBtn.id = 'myTextTranscriptButton';
+            textTranscriptBtn.innerText = 'View Text Transcript';
+            textTranscriptBtn.className = 'custom-yt-btn';
+            btnContainer.appendChild(textTranscriptBtn);
+        }
+
         // Set up quotes button click handler
         quotesBtn.onclick = function () {
             const videoUrl = new URL(thumbnail.href);
@@ -36,6 +56,36 @@ document.body.addEventListener('mouseover', function (e) {
                     const flaskAppUrl = `http://127.0.0.1:9000/quotes_viewer?video_id=${videoId}&filter_text=${encodeURIComponent(filterText)}`;
                     window.open(flaskAppUrl, '_blank');
                 }
+            } else {
+                alert('Could not extract video ID.');
+            }
+        };
+
+        // Set up transcript button click handler
+        transcriptBtn.onclick = function () {
+            const videoUrl = new URL(thumbnail.href);
+            const videoId = videoUrl.searchParams.get('v');
+            if (videoId) {
+                const flaskAppUrl = `http://127.0.0.1:9000/full_transcript?video_id=${videoId}`;
+                window.open(flaskAppUrl, '_blank');
+            } else {
+                alert('Could not extract video ID.');
+            }
+        };
+
+        // Set up text transcript button click handler
+        textTranscriptBtn.onclick = function () {
+            const videoUrl = new URL(thumbnail.href);
+            const videoId = videoUrl.searchParams.get('v');
+            if (videoId) {
+                // Open transcript page and trigger text-only view with a script
+                const flaskAppUrl = `http://127.0.0.1:9000/full_transcript?video_id=${videoId}`;
+                const newWindow = window.open(flaskAppUrl, '_blank');
+                
+                // Execute script to switch to text-only view after page loads
+                newWindow.addEventListener('load', function() {
+                    newWindow.document.getElementById('text-only-button').click();
+                });
             } else {
                 alert('Could not extract video ID.');
             }

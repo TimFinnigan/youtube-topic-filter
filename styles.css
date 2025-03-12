@@ -23,6 +23,22 @@
     background: #b7271e;
 }
 
+#myTranscriptButton {
+    background: #1a73e8;
+}
+
+#myTranscriptButton:hover {
+    background: #1557b0;
+}
+
+#myTextTranscriptButton {
+    background: #34a853;
+}
+
+#myTextTranscriptButton:hover {
+    background: #2d8e47;
+}
+
 #myCustomButtonContainer {
     background: rgba(0, 0, 0, 0.7);
     padding: 8px;

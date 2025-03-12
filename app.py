@@ -301,6 +301,21 @@ def quotes_viewer():
                 color: #666;
                 font-style: italic;
             }}
+            .button {{
+                display: inline-block;
+                background-color: #1a73e8;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 4px;
+                text-decoration: none;
+                margin-top: 10px;
+                cursor: pointer;
+                border: none;
+                font-size: 14px;
+            }}
+            .button:hover {{
+                background-color: #1557b0;
+            }}
         </style>
     </head>
     <body>
@@ -310,6 +325,9 @@ def quotes_viewer():
             <div class="filter-info">
                 <strong>Filter:</strong> <span id="filter-text">{filter_text}</span>
                 <div><strong>Total matches:</strong> <span id="total-matches">Loading...</span></div>
+                <button id="view-full-transcript" class="button" onclick="window.open('/full_transcript?video_id={video_id}', '_blank')">
+                    View Full Transcript
+                </button>
             </div>
             <div id="quotes-container">
                 <div class="loading">Loading quotes...</div>
@@ -432,6 +450,251 @@ def quotes_viewer():
     '''
     
     return html
+
+@app.route('/full_transcript', methods=['GET'])
+def full_transcript():
+    video_id = request.args.get('video_id')
+    
+    if not video_id:
+        return "Video ID is required.", 400
+    
+    try:
+        # Fetch transcript
+        transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
+        
+        # Get YouTube API key
+        youtube_api_key = os.getenv('YOUTUBE_API_KEY')
+        video_title = "YouTube Video"
+        channel_name = ""
+        
+        if youtube_api_key:
+            # Retrieve video info
+            try:
+                video_info = get_video_info(youtube_api_key, video_id)
+                if video_info:
+                    video_title = video_info['title']
+                    channel_name = video_info['channel']
+            except Exception as e:
+                logging.error(f"Error retrieving video info: {e}", exc_info=True)
+        
+        html = f'''
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Full Transcript - {video_title}</title>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    margin: 0;
+                    padding: 20px;
+                    background-color: #f5f5f5;
+                    color: #333;
+                }}
+                .container {{
+                    max-width: 800px;
+                    margin: 0 auto;
+                    background-color: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }}
+                h1 {{
+                    color: #1a73e8;
+                    margin-top: 0;
+                }}
+                .transcript-segment {{
+                    margin-bottom: 15px;
+                    padding-bottom: 15px;
+                    border-bottom: 1px solid #eee;
+                }}
+                .timestamp {{
+                    color: #d93025;
+                    font-weight: bold;
+                    cursor: pointer;
+                    margin-bottom: 5px;
+                }}
+                .segment-text {{
+                    margin: 0;
+                }}
+                .back-button {{
+                    display: inline-block;
+                    background-color: #1a73e8;
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    text-decoration: none;
+                    margin-top: 20px;
+                    cursor: pointer;
+                }}
+                .back-button:hover {{
+                    background-color: #1557b0;
+                }}
+                .button-group {{
+                    margin: 20px 0;
+                    display: flex;
+                    gap: 10px;
+                }}
+                .toggle-button {{
+                    background-color: #1a73e8;
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    border: none;
+                    cursor: pointer;
+                }}
+                .toggle-button:hover {{
+                    background-color: #1557b0;
+                }}
+                .toggle-button.active {{
+                    background-color: #34a853;
+                }}
+                #text-only-view {{
+                    line-height: 1.8;
+                    display: none;
+                }}
+                .text-paragraph {{
+                    margin-bottom: 1em;
+                }}
+                .copy-button {{
+                    background-color: #1a73e8;
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    border: none;
+                    cursor: pointer;
+                    margin-bottom: 20px;
+                }}
+                .copy-button:hover {{
+                    background-color: #1557b0;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Full Transcript</h1>
+                <div id="video-info">
+                    <h2>{video_title}</h2>
+                    {f'<p><strong>Channel:</strong> {channel_name}</p>' if channel_name else ''}
+                    <p><a href="https://www.youtube.com/watch?v={video_id}" target="_blank">Watch on YouTube</a></p>
+                </div>
+                
+                <div class="button-group">
+                    <button id="timestamped-button" class="toggle-button active" onclick="showTimestamped()">With Timestamps</button>
+                    <button id="text-only-button" class="toggle-button" onclick="showTextOnly()">Text Only</button>
+                </div>
+                
+                <button id="copy-text-button" class="copy-button" onclick="copyTextToClipboard()" style="display: none;">
+                    Copy Text to Clipboard
+                </button>
+                
+                <div id="transcript-container">
+        '''
+        
+        # Add each transcript segment
+        for segment in transcript_list:
+            timestamp = segment['start']
+            minutes = int(timestamp // 60)
+            seconds = int(timestamp % 60)
+            formatted_time = f"{minutes:02d}:{seconds:02d}"
+            
+            html += f'''
+                    <div class="transcript-segment">
+                        <div class="timestamp" onclick="window.open('https://www.youtube.com/watch?v={video_id}&t={int(timestamp)}', '_blank')">
+                            🕒 {formatted_time} (Click to watch at this timestamp)
+                        </div>
+                        <p class="segment-text">{segment['text']}</p>
+                    </div>
+            '''
+        
+        # Create text-only version with better formatting
+        # Group segments into paragraphs (approximately every 5 segments)
+        paragraphs = []
+        current_paragraph = []
+        
+        for i, segment in enumerate(transcript_list):
+            current_paragraph.append(segment['text'])
+            
+            # Start a new paragraph every ~5 segments or if the segment ends with a period, question mark, or exclamation point
+            if (i + 1) % 5 == 0 or (segment['text'] and segment['text'][-1] in ['.', '?', '!']):
+                paragraphs.append(' '.join(current_paragraph))
+                current_paragraph = []
+        
+        # Add any remaining segments to the last paragraph
+        if current_paragraph:
+            paragraphs.append(' '.join(current_paragraph))
+        
+        # Create the text-only HTML
+        text_only_html = ''
+        for paragraph in paragraphs:
+            text_only_html += f'<p class="text-paragraph">{paragraph}</p>'
+        
+        html += f'''
+                </div>
+                
+                <div id="text-only-view">
+                    {text_only_html}
+                </div>
+                
+                <a href="javascript:history.back()" class="back-button">Back to Quotes</a>
+            </div>
+            
+            <script>
+                function showTimestamped() {{
+                    document.getElementById('transcript-container').style.display = 'block';
+                    document.getElementById('text-only-view').style.display = 'none';
+                    document.getElementById('copy-text-button').style.display = 'none';
+                    document.getElementById('timestamped-button').classList.add('active');
+                    document.getElementById('text-only-button').classList.remove('active');
+                }}
+                
+                function showTextOnly() {{
+                    document.getElementById('transcript-container').style.display = 'none';
+                    document.getElementById('text-only-view').style.display = 'block';
+                    document.getElementById('copy-text-button').style.display = 'block';
+                    document.getElementById('timestamped-button').classList.remove('active');
+                    document.getElementById('text-only-button').classList.add('active');
+                }}
+                
+                function copyTextToClipboard() {{
+                    // Get all text from paragraphs
+                    const paragraphs = document.querySelectorAll('.text-paragraph');
+                    let fullText = '';
+                    
+                    paragraphs.forEach(paragraph => {{
+                        fullText += paragraph.textContent + '\\n\\n';
+                    }});
+                    
+                    // Create a temporary textarea element to copy from
+                    const textarea = document.createElement('textarea');
+                    textarea.value = fullText;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    
+                    try {{
+                        // Execute copy command
+                        document.execCommand('copy');
+                        alert('Transcript copied to clipboard!');
+                    }} catch (err) {{
+                        console.error('Failed to copy text: ', err);
+                        alert('Failed to copy text. Please try again.');
+                    }}
+                    
+                    // Remove the temporary textarea
+                    document.body.removeChild(textarea);
+                }}
+            </script>
+        </body>
+        </html>
+        '''
+        
+        return html
+        
+    except Exception as e:
+        logging.error(f"Error fetching transcript: {e}", exc_info=True)
+        return f"Error fetching transcript: {str(e)}", 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=9000)
