@@ -50,6 +50,16 @@ YOUTUBE_API_KEY=your_youtube_api_key
 python app.py
 ```
 
+Alternatively, to prevent the creation of __pycache__ directories, use:
+```
+python run.py
+```
+
+Or set the environment variable directly:
+```
+PYTHONDONTWRITEBYTECODE=1 python app.py
+```
+
 ## Usage
 
 1. Navigate to YouTube

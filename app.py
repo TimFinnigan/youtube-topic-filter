@@ -1,7 +1,12 @@
+import sys
+import os
+
+# Prevent the creation of __pycache__ directories
+os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
+
 from flask import Flask, request, render_template, Response, jsonify
 from youtube_transcript_api import YouTubeTranscriptApi
 from dotenv import load_dotenv
-import os
 import logging
 import urllib.parse
 from get_video_info import get_video_info
