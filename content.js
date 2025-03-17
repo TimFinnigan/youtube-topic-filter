@@ -97,16 +97,9 @@ document.body.addEventListener('mouseover', function (e) {
         // Position the button container
         const rect = (thumbnail || videoPlayer).getBoundingClientRect();
         
-        // Position differently based on whether it's a thumbnail or video player
-        if (thumbnail) {
-            // For thumbnails, position in the top-left corner
-            btnContainer.style.top = `${rect.top + window.scrollY + 10}px`;
-            btnContainer.style.left = `${rect.left + window.scrollX + 10}px`;
-        } else {
-            // For video player, position in the top-right corner
-            btnContainer.style.top = `${rect.top + window.scrollY + 10}px`;
-            btnContainer.style.left = `${rect.right + window.scrollX - 150}px`; // Adjust position to not overlap controls
-        }
+        // Always position in the top-left corner for both thumbnails and video player
+        btnContainer.style.top = `${rect.top + window.scrollY + 10}px`;
+        btnContainer.style.left = `${rect.left + window.scrollX + 10}px`;
     }
 }, false);
 
