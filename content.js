@@ -1,7 +1,13 @@
 document.body.addEventListener('mouseover', function (e) {
+    // Check for thumbnail hover
     const thumbnail = e.target.closest('a#thumbnail');
-    if (thumbnail) {
-        console.log('Hovered over a thumbnail');
+    
+    // Check for video player hover (on video page)
+    const videoPlayer = e.target.closest('.html5-video-container');
+    
+    // Proceed if either a thumbnail or video player is hovered
+    if (thumbnail || videoPlayer) {
+        console.log('Hovered over a thumbnail or video player');
 
         // Create container for buttons if it doesn't exist
         let btnContainer = document.getElementById('myCustomButtonContainer');
@@ -26,35 +32,44 @@ document.body.addEventListener('mouseover', function (e) {
             btnContainer.appendChild(quotesBtn);
         }
 
-        // Create full transcript button if it doesn't exist
+        // Create transcript button if it doesn't exist
         let transcriptBtn = document.getElementById('myTranscriptButton');
         if (!transcriptBtn) {
             transcriptBtn = document.createElement('button');
             transcriptBtn.id = 'myTranscriptButton';
-            transcriptBtn.innerText = 'View Full Transcript';
+            transcriptBtn.innerText = 'View Transcript';
             transcriptBtn.className = 'custom-yt-btn';
             btnContainer.appendChild(transcriptBtn);
         }
 
-        // Create text transcript button if it doesn't exist
-        let textTranscriptBtn = document.getElementById('myTextTranscriptButton');
-        if (!textTranscriptBtn) {
-            textTranscriptBtn = document.createElement('button');
-            textTranscriptBtn.id = 'myTextTranscriptButton';
-            textTranscriptBtn.innerText = 'View Text Transcript';
-            textTranscriptBtn.className = 'custom-yt-btn';
-            btnContainer.appendChild(textTranscriptBtn);
-        }
+        // Get video ID either from thumbnail or current page URL
+        const getVideoId = () => {
+            if (thumbnail) {
+                const videoUrl = new URL(thumbnail.href);
+                return videoUrl.searchParams.get('v');
+            } else {
+                // We're on a video page, get video ID from URL
+                const currentUrl = new URL(window.location.href);
+                return currentUrl.searchParams.get('v');
+            }
+        };
 
         // Set up quotes button click handler
         quotesBtn.onclick = function () {
-            const videoUrl = new URL(thumbnail.href);
-            const videoId = videoUrl.searchParams.get('v');
+            const videoId = getVideoId();
             if (videoId) {
                 const filterText = prompt('Enter text to filter quotes by:');
                 if (filterText && filterText.trim() !== '') {
-                    const flaskAppUrl = `http://127.0.0.1:9000/quotes_viewer?video_id=${videoId}&filter_text=${encodeURIComponent(filterText)}`;
-                    window.open(flaskAppUrl, '_blank');
+                    // Send message to background script instead of opening Flask URL
+                    chrome.runtime.sendMessage({
+                        action: 'extractQuotes',
+                        videoId: videoId,
+                        filterText: filterText.trim()
+                    }, function(response) {
+                        if (!response || !response.success) {
+                            alert('Error extracting quotes: ' + (response?.error || 'Unknown error'));
+                        }
+                    });
                 }
             } else {
                 alert('Could not extract video ID.');
@@ -63,28 +78,16 @@ document.body.addEventListener('mouseover', function (e) {
 
         // Set up transcript button click handler
         transcriptBtn.onclick = function () {
-            const videoUrl = new URL(thumbnail.href);
-            const videoId = videoUrl.searchParams.get('v');
+            const videoId = getVideoId();
             if (videoId) {
-                const flaskAppUrl = `http://127.0.0.1:9000/full_transcript?video_id=${videoId}`;
-                window.open(flaskAppUrl, '_blank');
-            } else {
-                alert('Could not extract video ID.');
-            }
-        };
-
-        // Set up text transcript button click handler
-        textTranscriptBtn.onclick = function () {
-            const videoUrl = new URL(thumbnail.href);
-            const videoId = videoUrl.searchParams.get('v');
-            if (videoId) {
-                // Open transcript page and trigger text-only view with a script
-                const flaskAppUrl = `http://127.0.0.1:9000/full_transcript?video_id=${videoId}`;
-                const newWindow = window.open(flaskAppUrl, '_blank');
-                
-                // Execute script to switch to text-only view after page loads
-                newWindow.addEventListener('load', function() {
-                    newWindow.document.getElementById('text-only-button').click();
+                // Send message to background script instead of opening Flask URL
+                chrome.runtime.sendMessage({
+                    action: 'getFullTranscript',
+                    videoId: videoId
+                }, function(response) {
+                    if (!response || !response.success) {
+                        alert('Error getting transcript: ' + (response?.error || 'Unknown error'));
+                    }
                 });
             } else {
                 alert('Could not extract video ID.');
@@ -92,7 +95,9 @@ document.body.addEventListener('mouseover', function (e) {
         };
 
         // Position the button container
-        const rect = thumbnail.getBoundingClientRect();
+        const rect = (thumbnail || videoPlayer).getBoundingClientRect();
+        
+        // Always position in the top-left corner for both thumbnails and video player
         btnContainer.style.top = `${rect.top + window.scrollY + 10}px`;
         btnContainer.style.left = `${rect.left + window.scrollX + 10}px`;
     }
@@ -101,10 +106,18 @@ document.body.addEventListener('mouseover', function (e) {
 document.body.addEventListener('mouseout', function (e) {
     const relatedTarget = e.relatedTarget;
     const btnContainer = document.getElementById('myCustomButtonContainer');
-    if (btnContainer && !e.target.closest('a#thumbnail') && relatedTarget !== btnContainer && !btnContainer.contains(relatedTarget)) {
+    
+    // Check if we're moving out from a thumbnail or video player
+    const isLeavingThumbnail = e.target.closest('a#thumbnail') && !relatedTarget?.closest('a#thumbnail');
+    const isLeavingVideoPlayer = e.target.closest('.html5-video-container') && !relatedTarget?.closest('.html5-video-container');
+    
+    if (btnContainer && (isLeavingThumbnail || isLeavingVideoPlayer) && 
+        relatedTarget !== btnContainer && !btnContainer.contains(relatedTarget)) {
         setTimeout(() => {
             const currentContainer = document.getElementById('myCustomButtonContainer');
-            if (currentContainer && !document.querySelector('a#thumbnail:hover')) {
+            if (currentContainer && 
+                !document.querySelector('a#thumbnail:hover') && 
+                !document.querySelector('.html5-video-container:hover')) {
                 currentContainer.remove();
             }
         }, 50); // Short delay to catch quick movements

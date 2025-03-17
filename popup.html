@@ -7,70 +7,67 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            width: 300px;
+            margin: 0;
             padding: 15px;
-            background-color: #f5f5f5;
+            width: 300px;
+            color: #333;
         }
         h1 {
             color: #d93025;
             font-size: 18px;
             margin-top: 0;
         }
+        p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
         .feature {
-            background-color: white;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
         }
         .feature h2 {
             color: #1a73e8;
             font-size: 16px;
-            margin-top: 0;
+            margin-bottom: 5px;
         }
         .feature p {
-            font-size: 14px;
-            margin-bottom: 0;
+            margin-top: 5px;
         }
-        .footer {
-            font-size: 12px;
-            color: #666;
-            text-align: center;
+        .instructions {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
             margin-top: 15px;
+        }
+        .instructions ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin-bottom: 5px;
         }
     </style>
 </head>
 <body>
     <h1>YouTube Topic Filter</h1>
+    <p>Extract quotes and view transcripts from YouTube videos based on specific topics or keywords.</p>
     
     <div class="feature">
         <h2>Extract Quotes</h2>
-        <p>Hover over any YouTube video thumbnail and click "Extract Quotes" to find all mentions of specific words or phrases in the video.</p>
-        <p style="font-size: 12px; margin-top: 5px; color: #666;">Note: For single words, the search matches whole words only. For phrases, it matches the exact phrase.</p>
+        <p>Find all mentions of specific words or phrases in a video.</p>
     </div>
     
     <div class="feature">
         <h2>View Transcript</h2>
-        <p>Hover over any YouTube video thumbnail and choose from two transcript options:</p>
-        <ul style="margin: 5px 0; padding-left: 20px;">
-            <li><strong>View Full Transcript</strong> - See the complete transcript with clickable timestamps</li>
-            <li><strong>View Text Transcript</strong> - See just the text without timestamps</li>
-        </ul>
+        <p>See the complete transcript with clickable timestamps.</p>
     </div>
     
-    <div class="feature">
+    <div class="instructions">
         <h2>How to Use</h2>
-        <ol style="margin: 10px 0; padding-left: 20px;">
-            <li>Hover over a YouTube video thumbnail</li>
-            <li>Click one of the available buttons</li>
-            <li>For quotes, enter the text you want to search for</li>
-            <li>View all mentions with timestamps or the full transcript</li>
-            <li>Click on timestamps to jump to that point in the video</li>
+        <ol>
+            <li>Navigate to YouTube</li>
+            <li>Hover over any video thumbnail</li>
+            <li>Use the buttons that appear to extract quotes or view transcripts</li>
         </ol>
-    </div>
-    
-    <div class="footer">
-        <p>Make sure the Flask server is running on port 9000.</p>
     </div>
 </body>
 </html>
