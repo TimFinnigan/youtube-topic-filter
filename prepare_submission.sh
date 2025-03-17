@@ -13,7 +13,7 @@ cp quotes.html submission/
 cp quotes.js submission/
 cp transcript.html submission/
 cp transcript.js submission/
-cp privacy-policy.html submission/
+cp privacy-policy.md submission/
 cp -r images submission/
 
 # Create a zip file
@@ -34,7 +34,7 @@ echo "- Extension name: Transcript Pro"
 echo "- Description: Find words and view transcripts from YouTube videos with ease."
 echo "- Category: Productivity"
 echo "- Language: English"
-echo "- Privacy policy: Use the content from privacy-policy.txt"
+echo "- Privacy policy: Use the content from privacy-policy.md"
 echo "- Screenshots: At least one screenshot showing the extension in use"
 echo "- Promotional images (optional): Small tile (440x280px), Large tile (920x680px)"
 echo "- Price: Free" 
