@@ -31,17 +31,20 @@
     "action": {
         "default_popup": "popup.html",
         "default_icon": {
-            "16": "images/icon16.png"
+            "16": "images/icon16.png",
+            "48": "images/icon48.png",
+            "128": "images/icon128.png"
         }
     },
     "icons": {
-        "16": "images/icon16.png"
+        "16": "images/icon16.png",
+        "48": "images/icon48.png",
+        "128": "images/icon128.png"
     },
     "web_accessible_resources": [
         {
-            "resources": ["quotes.html", "transcript.html", "transcript.js", "quotes.js", "privacy-policy.html"],
+            "resources": ["quotes.html", "transcript.html", "transcript.js", "quotes.js", "privacy-policy.md"],
             "matches": ["*://www.youtube.com/*"]
         }
-    ],
-    "privacy_policy_url": "https://YOUR_WEBSITE.com/privacy-policy.html"
+    ]
 }
