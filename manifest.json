@@ -4,7 +4,13 @@
     "version": "1.0",
     "description": "Extract summaries and quotes from YouTube videos based on specific topics or keywords.",
     "permissions": [
-        "activeTab"
+        "activeTab",
+        "storage",
+        "scripting"
+    ],
+    "host_permissions": [
+        "*://www.youtube.com/*",
+        "*://www.googleapis.com/*"
     ],
     "content_scripts": [
         {
@@ -19,6 +25,9 @@
             ]
         }
     ],
+    "background": {
+        "service_worker": "background.js"
+    },
     "action": {
         "default_popup": "popup.html",
         "default_icon": {
@@ -27,5 +36,11 @@
     },
     "icons": {
         "16": "images/icon16.png"
-    }
+    },
+    "web_accessible_resources": [
+        {
+            "resources": ["quotes.html", "transcript.html", "transcript.js", "quotes.js"],
+            "matches": ["*://www.youtube.com/*"]
+        }
+    ]
 }

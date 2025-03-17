@@ -53,8 +53,16 @@ document.body.addEventListener('mouseover', function (e) {
             if (videoId) {
                 const filterText = prompt('Enter text to filter quotes by:');
                 if (filterText && filterText.trim() !== '') {
-                    const flaskAppUrl = `http://127.0.0.1:9000/quotes_viewer?video_id=${videoId}&filter_text=${encodeURIComponent(filterText)}`;
-                    window.open(flaskAppUrl, '_blank');
+                    // Send message to background script instead of opening Flask URL
+                    chrome.runtime.sendMessage({
+                        action: 'extractQuotes',
+                        videoId: videoId,
+                        filterText: filterText.trim()
+                    }, function(response) {
+                        if (!response || !response.success) {
+                            alert('Error extracting quotes: ' + (response?.error || 'Unknown error'));
+                        }
+                    });
                 }
             } else {
                 alert('Could not extract video ID.');
@@ -66,8 +74,15 @@ document.body.addEventListener('mouseover', function (e) {
             const videoUrl = new URL(thumbnail.href);
             const videoId = videoUrl.searchParams.get('v');
             if (videoId) {
-                const flaskAppUrl = `http://127.0.0.1:9000/full_transcript?video_id=${videoId}`;
-                window.open(flaskAppUrl, '_blank');
+                // Send message to background script instead of opening Flask URL
+                chrome.runtime.sendMessage({
+                    action: 'getFullTranscript',
+                    videoId: videoId
+                }, function(response) {
+                    if (!response || !response.success) {
+                        alert('Error getting transcript: ' + (response?.error || 'Unknown error'));
+                    }
+                });
             } else {
                 alert('Could not extract video ID.');
             }
@@ -78,13 +93,15 @@ document.body.addEventListener('mouseover', function (e) {
             const videoUrl = new URL(thumbnail.href);
             const videoId = videoUrl.searchParams.get('v');
             if (videoId) {
-                // Open transcript page and trigger text-only view with a script
-                const flaskAppUrl = `http://127.0.0.1:9000/full_transcript?video_id=${videoId}`;
-                const newWindow = window.open(flaskAppUrl, '_blank');
-                
-                // Execute script to switch to text-only view after page loads
-                newWindow.addEventListener('load', function() {
-                    newWindow.document.getElementById('text-only-button').click();
+                // Send message to background script instead of opening Flask URL
+                chrome.runtime.sendMessage({
+                    action: 'getFullTranscript',
+                    videoId: videoId,
+                    textOnly: true
+                }, function(response) {
+                    if (!response || !response.success) {
+                        alert('Error getting transcript: ' + (response?.error || 'Unknown error'));
+                    }
                 });
             } else {
                 alert('Could not extract video ID.');
