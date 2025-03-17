@@ -250,7 +250,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           channel_name: videoInfo?.channel || 'Unknown Channel',
           transcript: transcript,
           video_id: request.videoId,
-          textOnly: request.textOnly || false
+          textOnly: false // Default to regular view
         };
         
         // Store the result in extension storage

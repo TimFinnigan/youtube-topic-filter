@@ -26,24 +26,14 @@ document.body.addEventListener('mouseover', function (e) {
             btnContainer.appendChild(quotesBtn);
         }
 
-        // Create full transcript button if it doesn't exist
+        // Create transcript button if it doesn't exist
         let transcriptBtn = document.getElementById('myTranscriptButton');
         if (!transcriptBtn) {
             transcriptBtn = document.createElement('button');
             transcriptBtn.id = 'myTranscriptButton';
-            transcriptBtn.innerText = 'View Full Transcript';
+            transcriptBtn.innerText = 'View Transcript';
             transcriptBtn.className = 'custom-yt-btn';
             btnContainer.appendChild(transcriptBtn);
-        }
-
-        // Create text transcript button if it doesn't exist
-        let textTranscriptBtn = document.getElementById('myTextTranscriptButton');
-        if (!textTranscriptBtn) {
-            textTranscriptBtn = document.createElement('button');
-            textTranscriptBtn.id = 'myTextTranscriptButton';
-            textTranscriptBtn.innerText = 'View Text Transcript';
-            textTranscriptBtn.className = 'custom-yt-btn';
-            btnContainer.appendChild(textTranscriptBtn);
         }
 
         // Set up quotes button click handler
@@ -78,26 +68,6 @@ document.body.addEventListener('mouseover', function (e) {
                 chrome.runtime.sendMessage({
                     action: 'getFullTranscript',
                     videoId: videoId
-                }, function(response) {
-                    if (!response || !response.success) {
-                        alert('Error getting transcript: ' + (response?.error || 'Unknown error'));
-                    }
-                });
-            } else {
-                alert('Could not extract video ID.');
-            }
-        };
-
-        // Set up text transcript button click handler
-        textTranscriptBtn.onclick = function () {
-            const videoUrl = new URL(thumbnail.href);
-            const videoId = videoUrl.searchParams.get('v');
-            if (videoId) {
-                // Send message to background script instead of opening Flask URL
-                chrome.runtime.sendMessage({
-                    action: 'getFullTranscript',
-                    videoId: videoId,
-                    textOnly: true
                 }, function(response) {
                     if (!response || !response.success) {
                         alert('Error getting transcript: ' + (response?.error || 'Unknown error'));
