@@ -22,6 +22,92 @@ logging.basicConfig(level=logging.DEBUG)
 # Load environment variables
 load_dotenv()
 
+# Root route to handle the homepage
+@app.route('/')
+def index():
+    html = '''
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>YouTube Topic Filter</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                margin: 0;
+                padding: 20px;
+                background-color: #f5f5f5;
+                color: #333;
+            }
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                background-color: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            h1 {
+                color: #d93025;
+                margin-top: 0;
+            }
+            .feature {
+                margin-bottom: 20px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid #eee;
+            }
+            h2 {
+                color: #1a73e8;
+            }
+            .button {
+                display: inline-block;
+                background-color: #1a73e8;
+                color: white;
+                padding: 10px 20px;
+                text-decoration: none;
+                border-radius: 4px;
+                margin-top: 20px;
+            }
+            .button:hover {
+                background-color: #1557b0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>YouTube Topic Filter</h1>
+            <p>Welcome to the YouTube Topic Filter server. This server powers the browser extension that allows you to extract quotes and view transcripts from YouTube videos.</p>
+            
+            <div class="feature">
+                <h2>How to Use</h2>
+                <p>This is a backend server for the YouTube Topic Filter browser extension. To use it:</p>
+                <ol>
+                    <li>Make sure this server is running</li>
+                    <li>Install the browser extension</li>
+                    <li>Navigate to YouTube</li>
+                    <li>Hover over any video thumbnail</li>
+                    <li>Use the buttons that appear to extract quotes or view transcripts</li>
+                </ol>
+            </div>
+            
+            <div class="feature">
+                <h2>Available Features</h2>
+                <ul>
+                    <li><strong>Extract Quotes</strong> - Find all mentions of specific words or phrases in a video</li>
+                    <li><strong>View Full Transcript</strong> - See the complete transcript with clickable timestamps</li>
+                    <li><strong>View Text Transcript</strong> - See just the text without timestamps</li>
+                </ul>
+            </div>
+            
+            <p>The server is running correctly. You can now use the browser extension.</p>
+        </div>
+    </body>
+    </html>
+    '''
+    return html
+
 # Sanitize filenames to avoid issues with special characters
 def sanitize_filename(filename):
     return filename.replace('/', '-').replace(':', '-')
