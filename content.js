@@ -22,14 +22,14 @@ document.body.addEventListener('mouseover', function (e) {
             document.body.appendChild(btnContainer);
         }
 
-        // Create quotes button if it doesn't exist
-        let quotesBtn = document.getElementById('myQuotesButton');
-        if (!quotesBtn) {
-            quotesBtn = document.createElement('button');
-            quotesBtn.id = 'myQuotesButton';
-            quotesBtn.innerText = 'Extract Quotes';
-            quotesBtn.className = 'custom-yt-btn';
-            btnContainer.appendChild(quotesBtn);
+        // Create find words button if it doesn't exist
+        let findWordsBtn = document.getElementById('myFindWordsButton');
+        if (!findWordsBtn) {
+            findWordsBtn = document.createElement('button');
+            findWordsBtn.id = 'myFindWordsButton';
+            findWordsBtn.innerText = 'Find Words';
+            findWordsBtn.className = 'custom-yt-btn';
+            btnContainer.appendChild(findWordsBtn);
         }
 
         // Create transcript button if it doesn't exist
@@ -42,32 +42,49 @@ document.body.addEventListener('mouseover', function (e) {
             btnContainer.appendChild(transcriptBtn);
         }
 
+        // Store the current element reference as a data attribute
+        btnContainer.dataset.currentElementType = thumbnail ? 'thumbnail' : 'player';
+        if (thumbnail) {
+            btnContainer.dataset.thumbnailHref = thumbnail.href;
+        }
+
         // Get video ID either from thumbnail or current page URL
         const getVideoId = () => {
-            if (thumbnail) {
-                const videoUrl = new URL(thumbnail.href);
-                return videoUrl.searchParams.get('v');
+            // Get fresh references instead of using closure variables
+            if (btnContainer.dataset.currentElementType === 'thumbnail') {
+                try {
+                    const videoUrl = new URL(btnContainer.dataset.thumbnailHref);
+                    return videoUrl.searchParams.get('v');
+                } catch (e) {
+                    console.error('Error parsing thumbnail URL:', e);
+                    return null;
+                }
             } else {
                 // We're on a video page, get video ID from URL
-                const currentUrl = new URL(window.location.href);
-                return currentUrl.searchParams.get('v');
+                try {
+                    const currentUrl = new URL(window.location.href);
+                    return currentUrl.searchParams.get('v');
+                } catch (e) {
+                    console.error('Error parsing current URL:', e);
+                    return null;
+                }
             }
         };
 
-        // Set up quotes button click handler
-        quotesBtn.onclick = function () {
+        // Set up find words button click handler
+        findWordsBtn.onclick = function () {
             const videoId = getVideoId();
             if (videoId) {
-                const filterText = prompt('Enter text to filter quotes by:');
-                if (filterText && filterText.trim() !== '') {
+                const searchText = prompt('Enter words or phrases to find:');
+                if (searchText && searchText.trim() !== '') {
                     // Send message to background script instead of opening Flask URL
                     chrome.runtime.sendMessage({
                         action: 'extractQuotes',
                         videoId: videoId,
-                        filterText: filterText.trim()
+                        filterText: searchText.trim()
                     }, function(response) {
                         if (!response || !response.success) {
-                            alert('Error extracting quotes: ' + (response?.error || 'Unknown error'));
+                            alert('Error finding words: ' + (response?.error || 'Unknown error'));
                         }
                     });
                 }

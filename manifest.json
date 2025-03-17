@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "YouTube Topic Filter",
+    "name": "Transcript Pro",
     "version": "1.0",
-    "description": "Extract summaries and quotes from YouTube videos based on specific topics or keywords.",
+    "description": "Find words and view transcripts from YouTube videos with ease.",
     "permissions": [
         "activeTab",
         "storage",
