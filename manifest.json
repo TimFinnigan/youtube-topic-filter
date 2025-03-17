@@ -39,8 +39,9 @@
     },
     "web_accessible_resources": [
         {
-            "resources": ["quotes.html", "transcript.html", "transcript.js", "quotes.js"],
+            "resources": ["quotes.html", "transcript.html", "transcript.js", "quotes.js", "privacy-policy.html"],
             "matches": ["*://www.youtube.com/*"]
         }
-    ]
+    ],
+    "privacy_policy_url": "https://YOUR_WEBSITE.com/privacy-policy.html"
 }
