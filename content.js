@@ -1,7 +1,13 @@
 document.body.addEventListener('mouseover', function (e) {
+    // Check for thumbnail hover
     const thumbnail = e.target.closest('a#thumbnail');
-    if (thumbnail) {
-        console.log('Hovered over a thumbnail');
+    
+    // Check for video player hover (on video page)
+    const videoPlayer = e.target.closest('.html5-video-container');
+    
+    // Proceed if either a thumbnail or video player is hovered
+    if (thumbnail || videoPlayer) {
+        console.log('Hovered over a thumbnail or video player');
 
         // Create container for buttons if it doesn't exist
         let btnContainer = document.getElementById('myCustomButtonContainer');
@@ -36,10 +42,21 @@ document.body.addEventListener('mouseover', function (e) {
             btnContainer.appendChild(transcriptBtn);
         }
 
+        // Get video ID either from thumbnail or current page URL
+        const getVideoId = () => {
+            if (thumbnail) {
+                const videoUrl = new URL(thumbnail.href);
+                return videoUrl.searchParams.get('v');
+            } else {
+                // We're on a video page, get video ID from URL
+                const currentUrl = new URL(window.location.href);
+                return currentUrl.searchParams.get('v');
+            }
+        };
+
         // Set up quotes button click handler
         quotesBtn.onclick = function () {
-            const videoUrl = new URL(thumbnail.href);
-            const videoId = videoUrl.searchParams.get('v');
+            const videoId = getVideoId();
             if (videoId) {
                 const filterText = prompt('Enter text to filter quotes by:');
                 if (filterText && filterText.trim() !== '') {
@@ -61,8 +78,7 @@ document.body.addEventListener('mouseover', function (e) {
 
         // Set up transcript button click handler
         transcriptBtn.onclick = function () {
-            const videoUrl = new URL(thumbnail.href);
-            const videoId = videoUrl.searchParams.get('v');
+            const videoId = getVideoId();
             if (videoId) {
                 // Send message to background script instead of opening Flask URL
                 chrome.runtime.sendMessage({
@@ -79,19 +95,36 @@ document.body.addEventListener('mouseover', function (e) {
         };
 
         // Position the button container
-        const rect = thumbnail.getBoundingClientRect();
-        btnContainer.style.top = `${rect.top + window.scrollY + 10}px`;
-        btnContainer.style.left = `${rect.left + window.scrollX + 10}px`;
+        const rect = (thumbnail || videoPlayer).getBoundingClientRect();
+        
+        // Position differently based on whether it's a thumbnail or video player
+        if (thumbnail) {
+            // For thumbnails, position in the top-left corner
+            btnContainer.style.top = `${rect.top + window.scrollY + 10}px`;
+            btnContainer.style.left = `${rect.left + window.scrollX + 10}px`;
+        } else {
+            // For video player, position in the top-right corner
+            btnContainer.style.top = `${rect.top + window.scrollY + 10}px`;
+            btnContainer.style.left = `${rect.right + window.scrollX - 150}px`; // Adjust position to not overlap controls
+        }
     }
 }, false);
 
 document.body.addEventListener('mouseout', function (e) {
     const relatedTarget = e.relatedTarget;
     const btnContainer = document.getElementById('myCustomButtonContainer');
-    if (btnContainer && !e.target.closest('a#thumbnail') && relatedTarget !== btnContainer && !btnContainer.contains(relatedTarget)) {
+    
+    // Check if we're moving out from a thumbnail or video player
+    const isLeavingThumbnail = e.target.closest('a#thumbnail') && !relatedTarget?.closest('a#thumbnail');
+    const isLeavingVideoPlayer = e.target.closest('.html5-video-container') && !relatedTarget?.closest('.html5-video-container');
+    
+    if (btnContainer && (isLeavingThumbnail || isLeavingVideoPlayer) && 
+        relatedTarget !== btnContainer && !btnContainer.contains(relatedTarget)) {
         setTimeout(() => {
             const currentContainer = document.getElementById('myCustomButtonContainer');
-            if (currentContainer && !document.querySelector('a#thumbnail:hover')) {
+            if (currentContainer && 
+                !document.querySelector('a#thumbnail:hover') && 
+                !document.querySelector('.html5-video-container:hover')) {
                 currentContainer.remove();
             }
         }, 50); // Short delay to catch quick movements
