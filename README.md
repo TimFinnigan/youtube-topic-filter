@@ -15,6 +15,12 @@ Hover over any YouTube video thumbnail and click "Extract Quotes" to find all me
 - Highlight the search terms in the results
 - Save the results as JSON files for future reference
 
+## Demo
+
+Check out the demo video to see YouTube Topic Filter in action:
+
+[YouTube Topic Filter Demo](https://www.youtube.com/watch?v=hFz0r-Xouek)
+
 ## Installation
 
 ### Prerequisites
